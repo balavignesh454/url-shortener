@@ -1,3 +1,4 @@
+import re
 from flask import Flask, request, redirect, render_template, flash, url_for
 import sqlite3
 import hashlib
@@ -28,7 +29,12 @@ def home():
 @app.route('/shorten', methods=['POST'])
 def shorten_url():
     long_url = request.form.get('long_url')
-    if not long_url:
+      # Basic URL validation using regex
+    url_pattern = re.compile(
+        r'^(http:\/\/|https:\/\/)?([a-zA-Z0-9\-]+\.)+[a-zA-Z]{2,}(\/\S*)?$'
+    )
+    
+    if not long_url or not re.match(url_pattern, long_url):
         flash("⚠️ Please enter a valid URL.", "error")
         return redirect(url_for('home'))
 
